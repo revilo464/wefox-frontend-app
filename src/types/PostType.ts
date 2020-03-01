@@ -10,7 +10,7 @@ export interface Post {
 }
 
 export interface PostJSON {
-  id: number,
+  id?: number,
   title: string,
   content: string,
   lat: string | null,
@@ -30,5 +30,18 @@ export function decodePost(json: PostJSON): Post {
     image_url: json.image_url ? json.image_url : undefined,
     created_at: new Date(json.created_at),
     updated_at: new Date(json.updated_at)
+  }
+}
+
+export function encodePost(post: Post): PostJSON {
+  return {
+    id: post.id,
+    title: post.title,
+    content: post.content,
+    lat: post.lat ? JSON.stringify(post.lat) : '',
+    long: post.long ? JSON.stringify(post.long) : '',
+    image_url: post.image_url ? post.image_url : '',
+    created_at: JSON.stringify(post.created_at),
+    updated_at: JSON.stringify(post.updated_at)
   }
 }

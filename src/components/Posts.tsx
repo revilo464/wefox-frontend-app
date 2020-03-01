@@ -4,10 +4,11 @@ import { Post } from '../types/PostType';
 
 type PostsProps = {
   handlePostClick: (postId: number | undefined) => void,
+  handleNewPostClick: () => void,
   posts: Post[],
 }
 
-const Posts = ({ posts, handlePostClick }: PostsProps) => {
+const Posts = ({ posts, handlePostClick, handleNewPostClick }: PostsProps) => {
   
   const post_list = posts.map((item, key) =>
     <ListGroup.Item action key={item.id} onClick={() => handlePostClick(key)}>{item.title}</ListGroup.Item>
@@ -24,8 +25,8 @@ const Posts = ({ posts, handlePostClick }: PostsProps) => {
 
   return (
     <>
-      <ButtonToolbar className="my-2">
-        <Button variant="outline-primary">+ Add a Post</Button>
+      <ButtonToolbar className="mb-3">
+        <Button variant="outline-primary" onClick={() => handleNewPostClick()}>+ Add a Post</Button>
       </ButtonToolbar>
       <ListGroup>
         {post_list}

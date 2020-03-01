@@ -11,3 +11,6 @@
   color: #61dafb;
 }
 
+.form-control::placeholder {
+  color: lightgray;
+}

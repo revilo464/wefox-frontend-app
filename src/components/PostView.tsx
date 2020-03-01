@@ -8,7 +8,7 @@ type PostViewProps = {
 }
 
 const PostView = ({ post }: PostViewProps) => (
-  <Container className="p-3">  
+  <Container className="p-3">
     <h1>
       <b>Title:</b> {post.title}
     </h1>
