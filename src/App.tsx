@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Container, Row, Col, ListGroup } from 'react-bootstrap';
+import { Container, Row, Col } from 'react-bootstrap';
 import axios from 'axios';
 // TODO: import PropTypes from "prop-types";
 
@@ -44,13 +44,17 @@ function App() {
       <main className="my-3 py-5">
         <Container fluid={true}>
           <Row>
-            <Col md={5} className="overflow-auto">
-              <ListGroup>
+            <Col md={5} className="overflow-auto p-3">
+              <Container className="bordered-container p-3">
                 <Posts posts={posts} handlePostClick={handlePostClick} />
-              </ListGroup>
+              </Container>
             </Col>
-            <Col md={7}>
-              {posts.length > 0 && <PostView post={posts[currentPostId]} />}
+            <Col md={7} className="p-3">
+              {posts.length > 0 &&
+                <Container className="bordered-container p-3">
+                  <PostView post={posts[currentPostId]} />
+                </Container>
+              }
             </Col>
           </Row>
         </Container>

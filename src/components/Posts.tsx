@@ -27,8 +27,9 @@ const Posts = ({ posts, handlePostClick }: PostsProps) => {
       <ButtonToolbar className="my-2">
         <Button variant="outline-primary">+ Add a Post</Button>
       </ButtonToolbar>
-      
-      {post_list}
+      <ListGroup>
+        {post_list}
+      </ListGroup>
     </>
   );
 }
