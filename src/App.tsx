@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useReducer } from 'react';
 import { Container, Row, Col } from 'react-bootstrap';
 // TODO: import PropTypes from "prop-types";
 
@@ -7,7 +7,8 @@ import Posts from './components/Posts';
 import PostView from './components/PostView';
 import PostEdit from './components/PostEdit';
 
-import PostAPI from './api/PostAPI';
+import { listPosts, createPost } from './api/PostAPI';
+import { fetchReducer } from './api/FetchReducer';
 import { Post } from './types/PostType';
 
 import 'bootstrap/dist/css/bootstrap.min.css';
@@ -15,19 +16,25 @@ import './App.css';
 
 function App() {
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const [hasErrors, setErrors] = useState(false); // TODO: test here
-  const [isLoading, setIsLoading] = useState(true);
+  const [fetchState, dispatch] = useReducer(fetchReducer, {
+    isLoading: true,
+    isError: false,
+    apiData: {}
+  });
   const [posts, setPosts] = useState<Post[]>([]);
   const [post, setPost] = useState<Post>({ title: 'Test Create', content: 'Testing create functions' }); // TODO: remove this
   const [isCreatingPost, setIsCreatingPost] = useState<boolean>(false);
   const [currentPostId, setCurrentPostId] = useState(0);
-  const getPosts = () => posts; // TODO: use this for more advnaced state setting or discard
-  let postAPI = PostAPI({getPosts, setPosts, setIsLoading, setErrors});
+
+
+  // setPosts(fetchState.data);
+  
+  // const getPosts = () => posts; // TODO: use this for more advanced state setting or discard
+  // const { fetchData, postData } = PostAPI({getPosts, setPosts, setIsLoading, setErrors});
 
   useEffect(() => {
-    postAPI.fetchData();
-  }, [postAPI, currentPostId]); // TODO: should we depend on this for reload?
+    listPosts(dispatch, setPosts);
+  }, []); // TODO: should we depend on this for reload?
 
   function handlePostClick(postId: number | undefined) {
     if(postId !== undefined) {
@@ -39,8 +46,20 @@ function App() {
     setIsCreatingPost(true);
   }
 
-  function handleNewPostSubmit() {
-    postAPI.postData();
+  function handleNewPostSubmit(e: React.MouseEvent<HTMLButtonElement, MouseEvent>) {
+    e.preventDefault();
+    createPost(dispatch, post);
+    listPosts(dispatch, setPosts);
+    if (!fetchState.isError) {
+      setIsCreatingPost(false);
+    }
+    // TODO: more error handling
+  }
+
+  function handleNewPostCancel(e: React.MouseEvent<HTMLButtonElement, MouseEvent>) {
+    e.preventDefault();
+    setPost({ title: "", content: ""});
+    setIsCreatingPost(false);
   }
 
   function handleNewPostChange(e: React.ChangeEvent<HTMLInputElement>) {
@@ -66,11 +85,13 @@ function App() {
               </Container>
             </Col>
             <Col md={7} className="p-3">
-              {!isLoading && (isCreatingPost || posts.length === 0) &&
+              {!fetchState.isLoading && (isCreatingPost || posts.length === 0) &&
                 <Container className="bordered-container p-3">
                   <PostEdit
                     post={post}
                     handleChange={handleNewPostChange}
+                    handleNewPostSubmit={handleNewPostSubmit}
+                    handleNewPostCancel={handleNewPostCancel}
                   />
                 </Container>
               }

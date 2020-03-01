@@ -1,42 +1,49 @@
 import axios from 'axios';
 
 import { POSTS_URL } from '../Constants';
+import { FetchActions } from './FetchReducer';
 import { Post, PostJSON, decodePost, encodePost } from '../types/PostType';
 
-type PostAPIProps = {
-  getPosts: () => Post[],
-  setPosts: (posts: Post[]) => void,
-  setIsLoading: (isLoading: boolean) => void,
-  setErrors: (errors: boolean) => void,
-}
+const baseAPI = axios.create({
+  baseURL: POSTS_URL,
+  responseType: "json"
+});
 
-const PostAPI = ({ getPosts, setPosts, setIsLoading, setErrors }: PostAPIProps) => {
-  
-  const fetchData = async () => {
-    setIsLoading(true);
-    await axios.get<PostJSON[]>(POSTS_URL)
-      .then((response) => {
-        setPosts(response.data.map(decodePost));
-        setIsLoading(false);
-      })
-      .catch((error) => {
-        setErrors(error);
+export const listPosts = 
+    async (dispatch: React.Dispatch<FetchActions>
+          ,setPosts: React.Dispatch<React.SetStateAction<Post[]>>) => {
+  dispatch({type: 'FETCH_INIT'});
+  await baseAPI.get<PostJSON[]>("")
+    .then((response) => {
+      setPosts(response.data.map(decodePost));
+      dispatch({
+        type: 'FETCH_SUCCESS',
+        payload: response.data
       });
-  };
+    })
+    .catch((error) => {
+      dispatch({type: 'FETCH_FAILURE'});
+    });
+};
 
-  const postData = async (post: Post) => {
-    setIsLoading(true);
-    await axios.post(POSTS_URL, encodePost(post))
-      .then((response) => {
-        fetchData();
-        setIsLoading(false);
-      })
-      .catch((error) => {
-        setErrors(error);
-      });
-  };
-  
-  return { fetchData, postData }
-}
-
-export default PostAPI;
+export const createPost = 
+    async (dispatch: React.Dispatch<FetchActions>
+          ,post: Post) => {
+  dispatch({type: 'FETCH_INIT'});
+  await baseAPI.post<Post>("", encodePost(post))
+    .then((response) => {
+      if (response.status === 201) {
+        dispatch({
+          type: 'FETCH_SUCCESS',
+          payload: response.data
+        });
+      } else {
+        dispatch({
+          type: 'FETCH_FAILURE'
+        });
+      }
+    })
+    .catch((error) => {
+      dispatch({type: 'FETCH_FAILURE'});
+    });
+};

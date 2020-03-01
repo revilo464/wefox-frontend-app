@@ -1,13 +1,15 @@
 import React from 'react';
 import { Post } from '../types/PostType';
-import { Form } from 'react-bootstrap';
+import { Form, Button } from 'react-bootstrap';
 
 type PostEditProps = {
   post: Post,
-  handleChange: (e: React.ChangeEvent<HTMLInputElement>) => void
+  handleChange: (e: React.ChangeEvent<HTMLInputElement>) => void,
+  handleNewPostSubmit: (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void,
+  handleNewPostCancel: (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void
 }
 
-const PostEdit = ({ post, handleChange }: PostEditProps) => (
+const PostEdit = ({ post, handleChange, handleNewPostSubmit, handleNewPostCancel }: PostEditProps) => (
   <Form>
     <Form.Group>
       <Form.Label>Title</Form.Label>
@@ -59,6 +61,12 @@ const PostEdit = ({ post, handleChange }: PostEditProps) => (
         placeholder="Enter image URL"
       />
     </Form.Group>
+    <Button className="mx-1" variant="primary" onClick={handleNewPostSubmit} type="submit">
+      Submit
+    </Button>
+    <Button className="mx-1" variant="outline-secondary" onClick={handleNewPostCancel}>
+      Cancel
+    </Button>
   </Form>
 );
 
