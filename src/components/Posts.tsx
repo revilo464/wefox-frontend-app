@@ -1,16 +1,6 @@
 import React from 'react';
 import { ListGroup, Button, ButtonToolbar } from 'react-bootstrap';
-
-export interface Post {
-  id?: number,
-  title: string,
-  content: string,
-  lat?: number,
-  long?: number,
-  image_url?: string,
-  created_at?: Date,
-  updated_at?: Date,
-}
+import { Post } from '../types/PostType';
 
 type PostsProps = {
   handlePostClick: (postId: number | undefined) => void,
@@ -20,7 +10,7 @@ type PostsProps = {
 const Posts = ({ posts, handlePostClick }: PostsProps) => {
   
   const post_list = posts.map((item, key) =>
-    <ListGroup.Item action onClick={() => handlePostClick(key)}>{item.title}</ListGroup.Item>
+    <ListGroup.Item action key={item.id} onClick={() => handlePostClick(key)}>{item.title}</ListGroup.Item>
   );
 
   // const post_list = () => {
