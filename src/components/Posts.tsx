@@ -14,15 +14,6 @@ const Posts = ({ posts, handlePostClick, handleNewPostClick }: PostsProps) => {
     <ListGroup.Item action key={item.id} onClick={() => handlePostClick(key)}>{item.title}</ListGroup.Item>
   );
 
-  // const post_list = () => {
-  //   let post_test: JSX.Element[] = [];
-  //   for (let i = 0; i < 250; i++) {
-  //     let new_post = { id: i, title: i.toString(), content: "blah" };
-  //     post_test.push(<ListGroup.Item action onClick={() => handlePostClick(new_post.id)}>{new_post.title}</ListGroup.Item>);
-  //   }
-  //   return post_test;
-  // }
-
   return (
     <>
       <ButtonToolbar className="mb-3">

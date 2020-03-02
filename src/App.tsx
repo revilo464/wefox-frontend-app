@@ -1,13 +1,12 @@
 import React, { useState, useEffect, useReducer } from 'react';
 import { Container, Row, Col } from 'react-bootstrap';
-// TODO: import PropTypes from "prop-types";
 
 import Nav from './components/Nav';
 import Posts from './components/Posts';
 import PostView from './components/PostView';
 import PostEdit from './components/PostEdit';
 
-import { listPosts, createPost, removePost } from './api/PostAPI';
+import { listPosts, createPost, updatePost, removePost } from './api/PostAPI';
 import { fetchReducer } from './api/FetchReducer';
 import { Post } from './types/PostType';
 
@@ -24,6 +23,7 @@ function App() {
   const [posts, setPosts] = useState<Post[]>([]);
   const [post, setPost] = useState<Post>({ title: '', content: '' });
   const [isCreatingPost, setIsCreatingPost] = useState<boolean>(false);
+  const [isEditingExistingPost, setIsEditingExistingPost] = useState<boolean>(false);
   const [currentPostId, setCurrentPostId] = useState(0);
 
   useEffect(() => {
@@ -36,6 +36,8 @@ function App() {
 
   function handlePostClick(postId: number | undefined) {
     if(postId !== undefined) {
+      setIsCreatingPost(false);
+      setIsEditingExistingPost(false);
       setCurrentPostId(postId);
     }
   }
@@ -44,29 +46,28 @@ function App() {
     setIsCreatingPost(true);
   }
 
-  function handleNewPostSubmit(e: React.MouseEvent<HTMLButtonElement, MouseEvent>) {
-    e.preventDefault();
-    createPost(dispatch, post)
+  function handlePostSubmit() {
+    let apiFn = !isEditingExistingPost ? createPost : updatePost;
+    apiFn(dispatch, post)
       .then(() => {
         if (!fetchState.isError) {
           setIsCreatingPost(false);
-          console.log(posts.length)
+          setIsEditingExistingPost(false);
         }
         listPosts(dispatch, setPosts)
           .then(() => {
-            setCurrentPostId(posts.length)
-            console.log(posts.length)
+            setCurrentPostId(posts.length);
+            setPost({ title: '', content: '' });
           });
       }
     );
-    
-    // TODO: more error handling
   }
 
   function handleNewPostCancel(e: React.MouseEvent<HTMLButtonElement, MouseEvent>) {
     e.preventDefault();
     setPost({ title: "", content: ""});
     setIsCreatingPost(false);
+    setIsEditingExistingPost(false);
   }
 
   function handleNewPostChange(e: React.ChangeEvent<HTMLInputElement>) {
@@ -81,6 +82,12 @@ function App() {
         [e.target.name]: e.target.value,
       });
     }
+  }
+
+  function handlePostEdit(e: React.MouseEvent<HTMLButtonElement, MouseEvent>) {
+    setPost(posts[currentPostId])
+    setIsEditingExistingPost(true);
+    setIsCreatingPost(true);
   }
 
   function handlePostDelete(id:number | undefined, e: React.MouseEvent<HTMLButtonElement, MouseEvent>) {
@@ -99,7 +106,7 @@ function App() {
       <main className="my-3 py-5">
         <Container fluid={true}>
           <Row>
-            <Col md={5} className="overflow-auto p-3">
+            <Col md={4} className="overflow-auto p-3">
               <Container className="bordered-container p-3">
                 <Posts
                   posts={posts}
@@ -108,13 +115,14 @@ function App() {
                 />
               </Container>
             </Col>
-            <Col md={7} className="p-3">
+            <Col md={8} className="p-3">
               {!fetchState.isLoading && (isCreatingPost || posts.length === 0) &&
                 <Container className="bordered-container p-3">
                   <PostEdit
                     post={post}
+                    isEditingExistingPost={isEditingExistingPost}
                     handleChange={handleNewPostChange}
-                    handleNewPostSubmit={handleNewPostSubmit}
+                    handleNewPostSubmit={handlePostSubmit}
                     handleNewPostCancel={handleNewPostCancel}
                   />
                 </Container>
@@ -123,6 +131,7 @@ function App() {
                 <Container className="bordered-container p-3">
                   <PostView
                     post={posts[currentPostId]}
+                    handlePostEdit={handlePostEdit}
                     handlePostDelete={handlePostDelete}
                   />
                 </Container>

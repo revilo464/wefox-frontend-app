@@ -16,7 +16,7 @@ const GoogleMapView = ({identifier, lat, long}: GoogleMapViewProps) => (
       id={(identifier ? identifier : 'default') + '-map'}
       mapContainerStyle={{
         height: "400px",
-        width: "600px",
+        width: "500px",
         display: "inline-block"
       }}
       zoom={9}

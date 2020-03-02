@@ -48,6 +48,28 @@ export const createPost =
     });
 };
 
+export const updatePost = 
+    async (dispatch: React.Dispatch<FetchActions>
+          ,post: Post) => {
+  dispatch({type: 'FETCH_INIT'});
+  await baseAPI.put<PostJSON>("/" + post.id, encodePost(post))
+    .then((response) => {
+      if (response.status === 200) {
+        dispatch({
+          type: 'FETCH_SUCCESS',
+          payload: decodePost(response.data)
+        });
+      } else {
+        dispatch({
+          type: 'FETCH_FAILURE'
+        });
+      }
+    })
+    .catch((error) => {
+      dispatch({type: 'FETCH_FAILURE'});
+    });
+};
+
 export const removePost = 
     async (dispatch: React.Dispatch<FetchActions>
           ,id: number) => {
