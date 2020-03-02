@@ -7,7 +7,7 @@ import Posts from './components/Posts';
 import PostView from './components/PostView';
 import PostEdit from './components/PostEdit';
 
-import { listPosts, createPost } from './api/PostAPI';
+import { listPosts, createPost, removePost } from './api/PostAPI';
 import { fetchReducer } from './api/FetchReducer';
 import { Post } from './types/PostType';
 
@@ -22,19 +22,17 @@ function App() {
     apiData: {}
   });
   const [posts, setPosts] = useState<Post[]>([]);
-  const [post, setPost] = useState<Post>({ title: 'Test Create', content: 'Testing create functions' }); // TODO: remove this
+  const [post, setPost] = useState<Post>({ title: '', content: '' });
   const [isCreatingPost, setIsCreatingPost] = useState<boolean>(false);
   const [currentPostId, setCurrentPostId] = useState(0);
 
-
-  // setPosts(fetchState.data);
-  
-  // const getPosts = () => posts; // TODO: use this for more advanced state setting or discard
-  // const { fetchData, postData } = PostAPI({getPosts, setPosts, setIsLoading, setErrors});
-
   useEffect(() => {
     listPosts(dispatch, setPosts);
-  }, []); // TODO: should we depend on this for reload?
+  }, []);
+  
+  if (!fetchState.isLoading && currentPostId > posts.length - 1) {
+    setCurrentPostId(posts.length - 1);
+  }
 
   function handlePostClick(postId: number | undefined) {
     if(postId !== undefined) {
@@ -48,11 +46,20 @@ function App() {
 
   function handleNewPostSubmit(e: React.MouseEvent<HTMLButtonElement, MouseEvent>) {
     e.preventDefault();
-    createPost(dispatch, post);
-    listPosts(dispatch, setPosts);
-    if (!fetchState.isError) {
-      setIsCreatingPost(false);
-    }
+    createPost(dispatch, post)
+      .then(() => {
+        if (!fetchState.isError) {
+          setIsCreatingPost(false);
+          console.log(posts.length)
+        }
+        listPosts(dispatch, setPosts)
+          .then(() => {
+            setCurrentPostId(posts.length)
+            console.log(posts.length)
+          });
+      }
+    );
+    
     // TODO: more error handling
   }
 
@@ -63,10 +70,27 @@ function App() {
   }
 
   function handleNewPostChange(e: React.ChangeEvent<HTMLInputElement>) {
-    setPost({
-      ...post,
-      [e.target.name]: e.target.value,
-    });
+    if (e.target.name === 'lat' || e.target.name === 'long') {
+      setPost({
+        ...post,
+        [e.target.name]: parseFloat(e.target.value),
+      });
+    } else {
+      setPost({
+        ...post,
+        [e.target.name]: e.target.value,
+      });
+    }
+  }
+
+  function handlePostDelete(id:number | undefined, e: React.MouseEvent<HTMLButtonElement, MouseEvent>) {
+    e.preventDefault();
+    if (id) {
+      removePost(dispatch, id)
+        .then((r) => 
+          listPosts(dispatch, setPosts)
+        );
+    }
   }
 
   return (
@@ -95,9 +119,12 @@ function App() {
                   />
                 </Container>
               }
-              {!isCreatingPost && posts.length > 0 &&
+              {!fetchState.isLoading && !isCreatingPost && posts.length > 0 &&
                 <Container className="bordered-container p-3">
-                  <PostView post={posts[currentPostId]} />
+                  <PostView
+                    post={posts[currentPostId]}
+                    handlePostDelete={handlePostDelete}
+                  />
                 </Container>
               }
             </Col>

@@ -8,7 +8,7 @@ export const fetchReducer = (state: any, action: FetchActions) => {
     case 'FETCH_INIT':
       return {
         ...state,
-        isLoading: false,
+        isLoading: true,
         isError: false
       };
     case 'FETCH_SUCCESS':
@@ -16,7 +16,7 @@ export const fetchReducer = (state: any, action: FetchActions) => {
         ...state,
         isLoading: false,
         isError: false,
-        data: action.payload,
+        apiData: action.payload,
       };
     case 'FETCH_FAILURE':
       return {

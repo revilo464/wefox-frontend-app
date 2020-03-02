@@ -30,9 +30,31 @@ export const createPost =
     async (dispatch: React.Dispatch<FetchActions>
           ,post: Post) => {
   dispatch({type: 'FETCH_INIT'});
-  await baseAPI.post<Post>("", encodePost(post))
+  await baseAPI.post<PostJSON>("", encodePost(post))
     .then((response) => {
       if (response.status === 201) {
+        dispatch({
+          type: 'FETCH_SUCCESS',
+          payload: decodePost(response.data)
+        });
+      } else {
+        dispatch({
+          type: 'FETCH_FAILURE'
+        });
+      }
+    })
+    .catch((error) => {
+      dispatch({type: 'FETCH_FAILURE'});
+    });
+};
+
+export const removePost = 
+    async (dispatch: React.Dispatch<FetchActions>
+          ,id: number) => {
+  dispatch({type: 'FETCH_INIT'});
+  await baseAPI.delete("/" + id)
+    .then((response) => {
+      if (response.status === 204) {
         dispatch({
           type: 'FETCH_SUCCESS',
           payload: response.data
