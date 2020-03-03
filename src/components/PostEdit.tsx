@@ -58,6 +58,7 @@ const PostEdit =
             name="lat"
             onChange={handleChange}
             type="number"
+            step="any"
             placeholder="Enter latitude"
           />
         </Form.Group>
@@ -68,6 +69,7 @@ const PostEdit =
             name="long"
             onChange={handleChange}
             type="number"
+            step="any"
             placeholder="Enter longitude"
           />
         </Form.Group>
