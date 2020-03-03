@@ -1,5 +1,5 @@
 import React from 'react'
-import { GoogleMap, LoadScript } from '@react-google-maps/api'
+import { GoogleMap } from '@react-google-maps/api'
 
 type GoogleMapViewProps = {
   identifier: number | undefined,
@@ -8,10 +8,7 @@ type GoogleMapViewProps = {
 }
 
 const GoogleMapView = ({identifier, lat, long}: GoogleMapViewProps) => (
-  <LoadScript
-    id="script-loader"
-    googleMapsApiKey="AIzaSyAbLxu9qEbBpX8BW3cTMA8M6idiVIOtZhE"
-  >
+  
     <GoogleMap
       id={(identifier ? identifier : 'default') + '-map'}
       mapContainerStyle={{
@@ -26,7 +23,6 @@ const GoogleMapView = ({identifier, lat, long}: GoogleMapViewProps) => (
       }}
     >
     </GoogleMap>
-  </LoadScript>
 );
 
 export default GoogleMapView;

@@ -12,6 +12,7 @@ import { Post } from './types/PostType';
 
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './App.css';
+import { LoadScript } from '@react-google-maps/api';
 
 function App() {
 
@@ -116,26 +117,31 @@ function App() {
               </Container>
             </Col>
             <Col md={8} className="p-3">
-              {!fetchState.isLoading && (isCreatingPost || posts.length === 0) &&
-                <Container className="bordered-container p-3">
-                  <PostEdit
-                    post={post}
-                    isEditingExistingPost={isEditingExistingPost}
-                    handleChange={handleNewPostChange}
-                    handleNewPostSubmit={handlePostSubmit}
-                    handleNewPostCancel={handleNewPostCancel}
-                  />
-                </Container>
-              }
-              {!fetchState.isLoading && !isCreatingPost && posts.length > 0 &&
-                <Container className="bordered-container p-3">
-                  <PostView
-                    post={posts[currentPostId]}
-                    handlePostEdit={handlePostEdit}
-                    handlePostDelete={handlePostDelete}
-                  />
-                </Container>
-              }
+              <LoadScript
+                id="script-loader"
+                googleMapsApiKey="AIzaSyAbLxu9qEbBpX8BW3cTMA8M6idiVIOtZhE"
+              >
+                {!fetchState.isLoading && (isCreatingPost || posts.length === 0) &&
+                  <Container className="bordered-container p-3">
+                    <PostEdit
+                      post={post}
+                      isEditingExistingPost={isEditingExistingPost}
+                      handleChange={handleNewPostChange}
+                      handleNewPostSubmit={handlePostSubmit}
+                      handleNewPostCancel={handleNewPostCancel}
+                    />
+                  </Container>
+                }
+                {!fetchState.isLoading && !isCreatingPost && posts.length > 0 &&
+                  <Container className="bordered-container p-3">
+                    <PostView
+                      post={posts[currentPostId]}
+                      handlePostEdit={handlePostEdit}
+                      handlePostDelete={handlePostDelete}
+                    />
+                  </Container>
+                }
+              </LoadScript>
             </Col>
           </Row>
         </Container>
