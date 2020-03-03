@@ -44,6 +44,10 @@ function App() {
   }
 
   function handleNewPostClick() {
+    if (isEditingExistingPost) {
+      setPost({ title: "", content: "", image_url: "" });
+      setIsEditingExistingPost(false);
+    }
     setIsCreatingPost(true);
   }
 
